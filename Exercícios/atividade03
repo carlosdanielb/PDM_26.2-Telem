@@ -1,0 +1,35 @@
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
+
+void main() async {
+  // 1. Suas credenciais do Gmail
+  String username = 'carlos.brilhante62@aluno.ifce.edu.br';
+  
+  // Use a "Senha de App" gerada no Google, NÃO a sua senha normal!
+  String password = 'vyvo agkg wskp jxzg'; 
+
+  // 2. Configura o servidor SMTP do Gmail
+  final smtpServer = gmail(username, password);
+
+  // 3. Cria a mensagem de email
+  final message = Message()
+    ..from = Address(username, 'Meu Script Dart')
+    ..recipients.add('carlos.brilhante62@aluno.ifce.edu.br') // Email de quem vai receber
+    // ..ccRecipients.addAll(['.']) // Opcional: Com cópia
+    ..subject = 'Teste de Email via Dart :: 😀 :: ${DateTime.now()}'
+    ..text = 'Este é um email de texto puro enviado pelo Dart!'
+    ..html = "<h1>Email Enviado!</h1>\n<p>Este email foi enviado usando o pacote <b>mailer</b> do Dart.</p>";
+
+  // 4. Envia o email e trata possíveis erros
+  try {
+    print('Enviando email...');
+    final sendReport = await send(message, smtpServer);
+    print('Mensagem enviada com sucesso!');
+    print('Detalhes: ${sendReport.toString()}');
+  } on MailerException catch (e) {
+    print('Erro ao enviar o email:');
+    for (var p in e.problems) {
+      print('Problema: ${p.code}: ${p.msg}');
+    }
+  }
+}
